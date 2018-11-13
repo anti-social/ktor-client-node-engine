@@ -13,7 +13,9 @@ import io.ktor.client.response.HttpResponse
 import io.ktor.http.Headers
 import io.ktor.http.HttpProtocolVersion
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.Url
 import io.ktor.http.content.OutgoingContent
+import io.ktor.http.isSecure
 import io.ktor.util.date.GMTDate
 
 import kotlinx.coroutines.*
@@ -154,7 +156,8 @@ internal suspend fun awaitResponse(url: String, options: Any, body: Uint8Array?)
         cont.resume(response)
     }
 
-    val req = if (url.startsWith("https://")) {
+    val protocol = Url(url).protocol
+    val req = if (protocol.isSecure()) {
         io.ktor.client.engine.js.node.https.request(url, options, ::callback)
     } else {
         io.ktor.client.engine.js.node.http.request(url, options, ::callback)
