@@ -1,4 +1,4 @@
-package io.ktor.client.engine.js
+package io.ktor.client.engine.js.node
 
 import org.khronos.webgl.Uint8Array
 

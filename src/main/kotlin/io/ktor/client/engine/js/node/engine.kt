@@ -1,10 +1,9 @@
-package io.ktor.client.engine.js
+package io.ktor.client.engine.js.node
 
 import io.ktor.client.call.HttpClientCall
 import io.ktor.client.call.HttpEngineCall
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.engine.HttpClientEngineConfig
-import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.engine.js.node.http.IncommingMessage
 import io.ktor.client.engine.mergeHeaders
 import io.ktor.client.request.DefaultHttpRequest
@@ -32,12 +31,6 @@ import kotlinx.coroutines.io.writer
 import kotlinx.io.core.readBytes
 
 import org.khronos.webgl.Uint8Array
-
-object Node : HttpClientEngineFactory<HttpClientEngineConfig> {
-    override fun create(block: HttpClientEngineConfig.() -> Unit): HttpClientEngine {
-        return NodeHttpEngine(HttpClientEngineConfig().apply(block))
-    }
-}
 
 class NodeHttpEngine(override val config: HttpClientEngineConfig) : HttpClientEngine {
     override val dispatcher = Dispatchers.Default
