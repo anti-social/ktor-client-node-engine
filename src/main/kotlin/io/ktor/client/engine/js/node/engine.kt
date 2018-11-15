@@ -15,6 +15,7 @@ import io.ktor.http.HttpProtocolVersion
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
 import io.ktor.http.content.OutgoingContent
+import io.ktor.http.content.TextContent
 import io.ktor.http.isSecure
 import io.ktor.util.date.GMTDate
 
@@ -52,7 +53,7 @@ class NodeHttpEngine(override val config: HttpClientEngineConfig) : HttpClientEn
         val request = DefaultHttpRequest(call, data)
 
         val rawResponse = awaitResponse(
-            request.url.toString(), request.toOptions(), request.bodyBytes()
+            request.url.toString(), request.toOptions(), request.bodyString()
         )
         val responseReader = ResponseReader(rawResponse)
 
@@ -110,16 +111,17 @@ internal fun HttpRequest.toOptions(): Any {
     }
 }
 
-internal suspend fun HttpRequest.bodyBytes(): Uint8Array? {
+internal suspend fun HttpRequest.bodyString(): String? {
     val content = content
     val bodyBytes = when (content) {
+        is TextContent -> return content.text
         is OutgoingContent.ByteArrayContent -> content.bytes()
         is OutgoingContent.ReadChannelContent -> content.readFrom().readRemaining().readBytes()
         is OutgoingContent.WriteChannelContent -> writer(coroutineContext) { content.writeTo(channel) }
             .channel.readRemaining().readBytes()
         else -> null
     }
-    return bodyBytes?.let { Uint8Array(it.toTypedArray()) }
+    return bodyBytes?.contentToString()
 }
 
 class Options(var method: String, var headers: dynamic)
@@ -151,7 +153,7 @@ class NodeHttpResponse(
     }
 }
 
-internal suspend fun awaitResponse(url: String, options: Any, body: Uint8Array?): IncommingMessage = suspendCancellableCoroutine { cont ->
+internal suspend fun awaitResponse(url: String, options: Any, body: String?): IncommingMessage = suspendCancellableCoroutine { cont ->
     fun callback(response: IncommingMessage) {
         cont.resume(response)
     }

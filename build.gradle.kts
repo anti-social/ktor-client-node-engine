@@ -11,6 +11,8 @@ repositories {
     mavenCentral()
     jcenter()
     maven { setUrl("https://kotlin.bintray.com/ktor") }
+    maven { setUrl("https://kotlin.bintray.com/kotlinx") }
+    mavenLocal()
 }
 
 dependencies {
@@ -20,6 +22,7 @@ dependencies {
 
     compile("io.ktor:ktor-client-core:$ktorVersion")
     compile("io.ktor:ktor-client-js:$ktorVersion")
+    compile("com.example:kotlin-dsl-multiplatform:0.0.1")
 }
 
 tasks.withType<Kotlin2JsCompile> {

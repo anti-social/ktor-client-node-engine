@@ -11,7 +11,7 @@ abstract external class Readable {
 
 abstract external class Writable {
     fun on(event: String, callback: (Throwable) -> Unit)
-    fun write(chunk: Uint8Array)
+    fun write(chunk: String)
     fun end()
     fun destroy(error: Throwable?)
 }
